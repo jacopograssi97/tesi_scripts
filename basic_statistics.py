@@ -37,6 +37,7 @@ def extract_nc(file_in, field, extract_time, units_time, calendar):
 
 
 
+
 def altitude_mask(field, orography, bottom_level, top_level):
     
     """
@@ -47,8 +48,3 @@ def altitude_mask(field, orography, bottom_level, top_level):
     masked_field = np.ma.masked_where(orography>top_level,masked_field)
     
     return masked_field
-
-    
-    
-
-    
