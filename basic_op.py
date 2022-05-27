@@ -4,9 +4,10 @@ from cdo import Cdo
 from scipy.fftpack import fft
 cdo=Cdo()
 import pandas as pd
-from eofs.standard import Eof
+from eofs.xarray import Eof
 from sklearn.cluster import KMeans
 from scipy import signal
+import xarray as xr
 
 def extract_nc(file_in, field, extract_time, units_time, calendar):
     
@@ -50,10 +51,6 @@ def eof_custom(field_3d, n_eof, n_pc, report):
         
         """
         """
-
-        # Rescaling using anomalies
-        field_3d = field_3d - field_3d.mean(axis=0)
-
         # Create an EOF solver to do the EOF analysis
         solver = Eof(field_3d)
 
@@ -64,19 +61,6 @@ def eof_custom(field_3d, n_eof, n_pc, report):
 
         eof = np.squeeze(eof[0:n_eof,:,:])
         pc = np.squeeze(pc[:,0:n_pc])
-        
-        if report == True:
-
-            print()
-            print('─' * 40)
-            print('EOF REPORT:')
-            print()
-            print('Selected output dimension: eof -> ' + str(n_eof) + '   pc -> ' + str(n_pc))
-            print('Input field size: ' + str(np.shape(field_3d)))
-            print('Output eof size: ' + str(np.shape(eof)))
-            print('Output pc size:  ' + str(np.shape(pc)))
-            print('Explained variance for each dimension: ' + str(exp_var[0:n_eof]*100))
-            print('─' * 40)
 
         return eof, pc, exp_var
 
@@ -134,3 +118,32 @@ def periodogram_custom(time_serie, samp_int, nfft,  report):
         print('─' * 40)
 
     return Pxx, period, f
+
+
+def gregorian_day(time):
+    
+    """
+    """
+
+    m = time.month
+    d = []
+    k = 1
+
+    for i in np.arange(0,len(m),1):
+
+        if i == len(m)-1:
+            k = k+1
+            break
+
+        elif m[i+1] < m[i]:
+            d.append(k)
+            k = 1
+
+        else:
+            d.append(k)
+            k = k+1
+
+    d.append(k)
+
+    return np.array(d)
+
