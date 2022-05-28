@@ -1,0 +1,42 @@
+
+{
+    "files_in" : [
+
+        "~/work/jacopo/DATA/ERA5_prec_day_HKKH.nc",
+        "~/work/jacopo/DATA/ERAINT_prec_day_HKKH.nc",
+        "~/work/jacopo/DATA/GPCC_prec_month_HKKH.nc"
+
+    ],
+    
+    "dataset_names" : [
+        "ERA5_tp",
+        "ERA_INT_tp",
+        "GPCC_tp"
+    ],
+
+    "western_longitude_limit" : 71,
+    "easter_longitude_limit" : 93,
+    "down_latitude_limit" : 25,
+    "up_latitude_limit" : 37,
+
+    "interp_method" : "distance_weighted",
+
+    "start_date" : "1980-01-01",
+    "end_date" : "1990-01-01",
+
+    "start_time" : "12:00:00",
+    "increment_time" : "1day",
+
+    "variable_name" : [
+        "tp",
+        "tp",
+        "precip"
+    ],
+    
+    "normalization_coeff" : [
+        24000,
+        1,
+        0.033
+    ]
+
+}

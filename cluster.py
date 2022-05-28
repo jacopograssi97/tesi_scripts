@@ -29,6 +29,7 @@ region_prec = cdo.sellonlatbox(71, 78, 32, 37, input = file_in_prec)
 # Himalaya
 #region_prec = cdo.sellonlatbox(78, 93, 25, 32, input = file_in_prec)
 
+
 # All
 #region_prec = cdo.sellonlatbox(71,93,25,37, input = file_in_prec)
 
