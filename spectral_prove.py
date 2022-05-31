@@ -25,8 +25,6 @@ region_Him = cdo.sellonlatbox(78,93,25,32, input=infile)
 mean_fld_HKK = cdo.timmean(input=region_HKK)
 mean_fld_Him = cdo.timmean(input=region_Him)
 
-
-
 # Time serie for both regions
 time_serie_HKK = cdo.fldmean(input=region_HKK)
 time_serie_Him = cdo.fldmean(input=region_Him)

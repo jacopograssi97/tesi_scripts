@@ -1,6 +1,7 @@
 import numpy as np
 from eofs.xarray import Eof
-from sklearn.cluster import KMeans 
+from sklearn.cluster import KMeans
+from scipy import signal 
 
 
 
@@ -70,32 +71,17 @@ def kmean_preditting(model, to_fit):
         return prediction
 
 
+def periodogram_custom(time_serie, samp_int, nfft,  report):
+        
+    """
+    """
 
+    time_serie_norm = (time_serie-np.mean(time_serie))/np.std(time_serie)
+    f, Pxx = signal.periodogram(np.squeeze(time_serie_norm), samp_int, nfft=nfft)
 
+    f = f[2:int(nfft/2+1)]
+    Pxx = Pxx[2:int(nfft/2+1)]
 
-def gregorian_day(xarr):
+    period = 1./f
     
-    """
-    """
-
-    m = xarr['time.month']
-    d = []
-    k = 1
-
-    for i in np.arange(0,len(m),1):
-
-        if i == len(m)-1:
-            k = k+1
-            break
-
-        elif m[i+1] < m[i]:
-            d.append(k)
-            k = 1
-
-        else:
-            d.append(k)
-            k = k+1
-
-    d.append(k)
-
-    return np.array(d)
+    return Pxx, period, f

@@ -1,6 +1,8 @@
 from cdo import Cdo
 import json
 import xarray as xr
+import math as mt
+import numpy as np
 cdo=Cdo()
 
 
@@ -11,19 +13,20 @@ def input_interface(json_filename):
         # Reading from json file
         json_IO = json.load(openfile)
 
+
     step1 = time_interpolation(json_IO['files_in'], json_IO['start_date'], json_IO['start_time'], json_IO['increment_time'])
     step2 = time_selection(step1, json_IO['start_date'], json_IO['start_time'], json_IO['end_date'])
     step3 = region_selection(step2, json_IO['western_longitude_limit'], json_IO['easter_longitude_limit'], json_IO['down_latitude_limit'], json_IO['up_latitude_limit'])
     step4 = region_regridding(step3, json_IO['interp_method'])
-    step5 = merge_dataset(step4, json_IO['variable_name'], json_IO['dataset_names'])
+    step5 = merge_dataset(step4, json_IO['variable_name'], json_IO['dataset_names'], json_IO['normalization_coeff'], json_IO['units'])
 
     cdo.cleanTempDir()
 
-    return step5
+    return step5, json_IO['dataset_names']
 
 
 
-def merge_dataset(files_in, variable_name, dataset_names):
+def merge_dataset(files_in, variable_name, dataset_names, normalization_coeff, units):
 
     data_set = []
     data_array = []
@@ -32,9 +35,11 @@ def merge_dataset(files_in, variable_name, dataset_names):
 
         data_set.append(xr.open_dataset(files_in[i]))
 
-        data_array.append(getattr(data_set[i], variable_name[i]).rename(dataset_names[i]))
+        data_array.append(getattr(data_set[i], variable_name[i]).rename(dataset_names[i])*normalization_coeff[i])
 
-    final_dataset = dt = xr.merge(data_array)
+        data_array[i].attrs['units'] = units[i]
+
+    final_dataset = xr.merge(data_array, compat="broadcast_equals", join="outer")
 
     return final_dataset
 
