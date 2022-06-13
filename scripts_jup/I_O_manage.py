@@ -18,7 +18,7 @@ def input_interface(json_filename):
     step2 = time_selection(step1, json_IO['start_date'], json_IO['start_time'], json_IO['end_date'])
     step3 = region_selection(step2, json_IO['western_longitude_limit'], json_IO['easter_longitude_limit'], json_IO['down_latitude_limit'], json_IO['up_latitude_limit'])
     step4 = region_regridding(step3, json_IO['interp_method'])
-    step5 = merge_dataset(step4, json_IO['variable_name'], json_IO['dataset_names'], json_IO['normalization_coeff'], json_IO['units'])
+    step5 = merge_dataset(step4, json_IO['variable_name'], json_IO['dataset_names'], json_IO['normalization_coeff'], json_IO['units'], json_IO['transformation'])
 
     cdo.cleanTempDir()
 
@@ -26,7 +26,7 @@ def input_interface(json_filename):
 
 
 
-def merge_dataset(files_in, variable_name, dataset_names, normalization_coeff, units):
+def merge_dataset(files_in, variable_name, dataset_names, normalization_coeff, units, transformation):
 
     data_set = []
     data_array = []
@@ -35,7 +35,13 @@ def merge_dataset(files_in, variable_name, dataset_names, normalization_coeff, u
 
         data_set.append(xr.open_dataset(files_in[i]))
 
-        data_array.append(getattr(data_set[i], variable_name[i]).rename(dataset_names[i])*normalization_coeff[i])
+        if transformation == 'logarithmic':
+
+            data_array.append(np.log(getattr(data_set[i], variable_name[i]).rename(dataset_names[i])*normalization_coeff[i]+0.000000001))
+
+        else:
+
+            data_array.append(getattr(data_set[i], variable_name[i]).rename(dataset_names[i])*normalization_coeff[i])
 
         data_array[i].attrs['units'] = units[i]
 

@@ -1,36 +1,49 @@
 
 {
     "files_in" : [
-        "~/work/jacopo/DATA/ERA5_prec_day_HKKH.nc"
+        "~/work/jacopo/DATA/ERA5_prec_day_HKKH.nc",
+        "~/work/jacopo/DATA/GPCC_prec_month_HKKH.nc",
+        "~/work/jacopo/DATA/ERAINT_prec_day_HKKH.nc"
+
     ],
     
     "dataset_names" : [
-        "ERA5_tp"
+        "ERA5_tp",
+        "GPCC_tp",
+        "ERAINT_tp"
     ],
 
-    "western_longitude_limit" : 78,
+    "western_longitude_limit" : 71,
     "easter_longitude_limit" : 93,
     "down_latitude_limit" : 25,
-    "up_latitude_limit" : 32,
+    "up_latitude_limit" : 37,
 
-    "interp_method" : "distance_weighted",
+    "interp_method" : "nearest_neigbhor",
 
-    "start_date" : "1951-01-01",
-    "end_date" : "2020-01-01",
+    "start_date" : "1980-02-01",
+    "end_date" : "2010-01-01",
 
     "start_time" : "12:00:00",
     "increment_time" : "1day",
 
     "variable_name" : [
+        "tp",
+        "precip",
         "tp"
     ],
     
     "normalization_coeff" : [
         24000,
+        0.03,
         1
     ],
 
     "units" : [
+        "mm/day",
+        "mm/day",
+        "mm/day",
         "mm/day"
-    ]
+    ],
+
+    "transformation" : null
 }

@@ -2,6 +2,7 @@ import numpy as np
 from eofs.xarray import Eof
 from sklearn.cluster import KMeans
 from scipy import signal 
+import matplotlib.pyplot as plt
 
 
 
@@ -85,3 +86,39 @@ def periodogram_custom(time_serie, samp_int, nfft,  report):
     period = 1./f
     
     return Pxx, period, f
+
+
+
+
+def dataset_plot(dataset, serie, dataset_names, xlab, ylab):
+
+        if len(dataset_names) == 1:
+
+                fig = plt.figure(figsize=(15, 4))
+                getattr(serie, dataset_names[0]).plot(hue = "lat")
+                plt.xlabel(xlab, fontsize=16)
+                plt.ylabel(ylab, fontsize=16)
+                plt.title(dataset_names[0], fontsize=18)
+                plt.grid()
+
+
+        else:
+
+                f, axs = plt.subplots(len(dataset_names),  figsize=(15, 4*len(dataset_names)), sharey=True)
+                plt.suptitle('halo')
+
+                for i in np.arange(0,len(dataset_names),1):
+
+                        getattr(serie, dataset_names[i]).plot(ax = axs[i], hue = "lat")
+
+                        axs[i].set_ylabel(xlab, fontsize=16)
+                        axs[i].set_xlabel(ylab, fontsize=16)
+
+                        axs[i].set_title(dataset_names[i], fontsize=18)
+    
+                        axs[i].grid()
+
+                        if i != len(dataset_names)-1:
+
+                                axs[i].tick_params(labelbottom=False)
+                                axs[i].set(xlabel = '') 

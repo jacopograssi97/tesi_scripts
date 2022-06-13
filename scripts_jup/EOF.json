@@ -1,15 +1,6 @@
 
 {
   
-    "dataset_to_base" : [
-        "ERA5_tp"
-    ],
-
-    "dataset_to_project" : [
-
-    ],
-
-
     "weights" : null,
 
     "center" : true,
@@ -20,6 +11,6 @@
 
     "pcscaling" : 0,
 
-    "n_comp" : 6
+    "n_comp" : 3
 
 }

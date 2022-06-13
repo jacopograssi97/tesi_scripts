@@ -4,7 +4,7 @@ import xarray as xr
 import json 
 
 
-def eof_base_interface(dataset,json_filename):
+def eof_base_interface(dataset_to_base, dataset_names_to_base,json_filename):
             
         
         with open(json_filename, 'r') as openfile:
@@ -12,16 +12,35 @@ def eof_base_interface(dataset,json_filename):
                 # Reading from json file
                 json_EOF = json.load(openfile)
 
-        eof_database, pc_database, exp_database, solver_database = eof_base_database(dataset, json_EOF['dataset_to_base'], json_EOF['weights'], json_EOF['center'], json_EOF['ddof'], json_EOF['eofscaling'], json_EOF['pcscaling'], json_EOF['n_comp'])
+        eof_base_dataset, pc_base_dataset, exp_dataset, solver_list = eof_base_dataset_create(dataset_to_base, dataset_names_to_base, 
+                                                                                                json_EOF['weights'], json_EOF['center'], 
+                                                                                                json_EOF['ddof'], json_EOF['eofscaling'], 
+                                                                                                json_EOF['pcscaling'], json_EOF['n_comp'])
 
                                                                 
-        return eof_database, pc_database, exp_database, solver_database
+        return eof_base_dataset, pc_base_dataset, exp_dataset, solver_list
+
+
+def eof_proj_interface(solver_list, dataset_to_project, dataset_names, json_filename):
+            
+        
+        with open(json_filename, 'r') as openfile:
+  
+                # Reading from json file
+                json_EOF = json.load(openfile)
+
+        pc_proj_dataset = eof_projection_database(solver_list, dataset_to_project,
+                                                                 dataset_names, json_EOF['n_comp'])
+
+                                                                
+        return pc_proj_dataset
 
 
 
 
 
-def eof_base_database(dataset, dataset_to_base, weights, center, ddof, eofscaling, pcscaling, n_comp):
+
+def eof_base_dataset_create(dataset, dataset_names, weights, center, ddof, eofscaling, pcscaling, n_comp):
         
         """
 
@@ -32,13 +51,15 @@ def eof_base_database(dataset, dataset_to_base, weights, center, ddof, eofscalin
         exp_vars = []
         solvers = []
 
-        for i in np.arange(0,len(dataset_to_base),1):
+        for i in np.arange(0,len(dataset_names),1):
 
-                eof, pc, exp_var, solver = eof_base(to_base = getattr(dataset, dataset_to_base[i]), weights = weights, center = center, ddof = ddof, eofscaling = eofscaling, pcscaling = pcscaling, n_comp = n_comp)
+                eof, pc, exp_var, solver = eof_base(to_base = getattr(dataset, dataset_names[i]), weights = weights, 
+                                                center = center, ddof = ddof, eofscaling = eofscaling, pcscaling = pcscaling,
+                                                 n_comp = n_comp)
 
-                eofs.append(eof.rename(f'eof_{dataset_to_base[i]}'))
-                pcs.append(pc.rename(f'pc_{dataset_to_base[i]}'))
-                exp_vars.append(exp_var.rename(f'exp_var_{dataset_to_base[i]}'))
+                eofs.append(eof.rename(f'{dataset_names[i]}'))
+                pcs.append(pc.rename(f'{dataset_names[i]}'))
+                exp_vars.append(exp_var.rename(f'{dataset_names[i]}'))
                 solvers.append(solver)
 
         eof_database = xr.merge(eofs)
@@ -48,8 +69,6 @@ def eof_base_database(dataset, dataset_to_base, weights, center, ddof, eofscalin
      
 
         return eof_database, pc_database, exp_database, solvers
-
-
 
 
 
@@ -83,47 +102,22 @@ def eof_base(to_base, weights, center, ddof, eofscaling, pcscaling, n_comp):
 
 
 
-def eof_projection_database(solver_database, database_to_base, dataset_to_project, n_comp):
+def eof_projection_database(solver_list, dataset_to_project, dataset_names, n_comp):
         
         """
 
         """
 
-        pcs_projection = []
+        pc_projection = []
 
-        for i in np.arange(0,len(dataset_to_project),1):
+        for i in range(len(dataset_names)):
 
-                pc_projection = getattr(solver_database, database_to_base[0]).projectField(dataset_to_project, neofs = n_comp)
+                supp = getattr(dataset_to_project, dataset_names[i]) - getattr(dataset_to_project, dataset_names[0]).mean('time')
+                pc_projection.append(solver_list[i].projectField(supp, neofs = n_comp).rename(f'{dataset_names[i]}'))
 
-                pcs_projection.append(pc_projection.rename(f'pc_proj_{dataset_to_project[i]}'))
+        pc_proj_dataset = xr.merge(pc_projection)
 
-        pc_proj_database = xr.merge(pcs_projection)
 
      
-        return pc_proj_database
+        return pc_proj_dataset
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def eof_project(solver, to_project, n_comp):
-        
-        """
-
-        """
-        pc_projection = solver.projectField(to_project, neofs = n_comp)
-
-        return pc_projection
