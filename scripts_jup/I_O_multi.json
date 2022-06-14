@@ -2,13 +2,13 @@
 {
     "files_in" : [
         "~/work/jacopo/DATA/ERA5_prec_day_HKKH.nc",
-        "~/work/jacopo/DATA/GPCC_prec_month_HKKH.nc"
+        "~/work/jacopo/DATA/ERA5_temp_day_HKKH.nc"
 
     ],
     
     "dataset_names" : [
         "ERA5_tp",
-        "GPCC_tp"
+        "ERA5_t2m"
     ],
 
     "western_longitude_limit" : 78,
@@ -26,18 +26,15 @@
 
     "variable_name" : [
         "tp",
-        "precip",
         "2t"
     ],
     
     "normalization_coeff" : [
         24000,
-        0.03,
         1
     ],
 
     "units" : [
-        "mm/day",
         "mm/day",
         "°C",
         "mm/day"
