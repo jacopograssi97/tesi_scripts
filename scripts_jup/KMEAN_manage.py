@@ -26,7 +26,7 @@ def kmean_models_dataset(dataset, dataset_names, n_season, n_iter):
             model_list.append(model)
             clust_centers.append(b.rename(f'cc_{dataset_names[i]}'))
 
-        cc_database = xr.merge(clust_centers)
+        cc_database = xr.merge(clust_centers, compat='override')
 
         return model_list, cc_database
 
